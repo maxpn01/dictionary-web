@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+
+        <div class="header-top">
+            <h1 class="header-title">
+                <a href="index.html">
+                    <i class="ri-book-2-line header-logo"></i> Dictionary
+                </a>
+            </h1>
+
+            <button class="theme-btn">
+                <i class="ri-moon-line theme-icon" id="theme-icon"></i>
+            </button>
+        </div>
+
+        <div class="search">
+            <input type="text" id="search-input" placeholder="Enter the word">
+            <button class="search-btn">Search</button>
+        </div>
+
+    </header>
+
+    <main class="main">
+
+
+        <audio class="audio" id="audio-us" src=""></audio>
+        <audio class="audio" id="audio-uk" src=""></audio>
+
+        <h2 class="word__title">hello</h2>
+
+                <p class="transcription">
+                    <span class="transcription__dialect">US</span>  
+                    <i class="ri-volume-up-line transcription__audio-btn"></i>
+                    <span class="transcription__text">/hallo/</span>
+                    
+                    <span class="transcription__dialect">UK</span> 
+                    <i class="ri-volume-up-line transcription__audio-btn"></i>
+                    <span class="transcription__text">/hallo/</span>
+                </p>
+
+                <section class="definitions">
+                    <h3 class="definition__part-of-speech">noun</h3>
+                    <h4 class="definition__meaning-label">Meaning</h4>
+
+                    <ul class="definition__meaning-list">
+                        <li>
+                            <p class="definition__text">
+                                Definition 1 text, blah blah blah
+                            </p>
+                            <p class="definition__example">
+                                Definition 1 meaning, blah blah blah
+                            </p>
+                        </li>
+                    </ul>
+                </section>
+
+                <p class="word-meaning">
+                    ${data[0].meanings[0].definitions[0].definition}
+                </p>
+
+                <p class="word-example">
+                    ${data[0].meanings[0]?.definitions[0].example}
+                </p>
+        
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
