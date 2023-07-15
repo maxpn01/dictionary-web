@@ -53,7 +53,7 @@ button {
     cursor: pointer;
 }
 
-a, #search-input, .search-btn,
+a, .search-btn,
 .transcription__audio-btn {
     transition: all 0.3s ease-in;
 }
