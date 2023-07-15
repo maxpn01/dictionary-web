@@ -59,7 +59,7 @@ function initiateSearch() {
                     <p class="transcription">
                         <span class="transcription__dialect">US</span>  
                         <i class="ri-volume-up-line transcription__audio-btn" id="audio-btn-us"></i>
-                        <span class="transcription__text">${data[0].phonetics[0].text}</span>
+                        <span class="transcription__text">${data[0]?.phonetics[0]?.text}</span>
                         
                         <span class="transcription__dialect">UK</span> 
                         <i class="ri-volume-up-line transcription__audio-btn" id="audio-btn-uk"></i>
@@ -75,8 +75,8 @@ function initiateSearch() {
                 const audioBtnUS = d.getElementById("audio-btn-us");
                 const audioBtnUK = d.getElementById("audio-btn-uk");
 
-                audioUS.setAttribute("src", `${data[0]?.phonetics[0].audio}`);
-                audioUK.setAttribute("src", `${data[0]?.phonetics[1].audio}`);
+                audioUS.setAttribute("src", `${data[0]?.phonetics[0]?.audio}`);
+                audioUK.setAttribute("src", `${data[0]?.phonetics[1]?.audio}`);
 
                 audioBtnUS.addEventListener("click", () => {
                     audioUS.play();
@@ -85,7 +85,8 @@ function initiateSearch() {
                     audioUK.play();
                 });
             })
-            .catch(() => {
+            .catch((err) => {
+                console.log(err);
                 wordContainer.innerHTML = `<h3>No Definitions Found 😕</h3>`;
             });
     } 
