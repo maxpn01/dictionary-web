@@ -1,6 +1,9 @@
 /****** VARIABLES ******/
 
 :root {
+    /* Typography */
+    --font-family: 'Lora', serif;
+
     /* Spaces */
     --container-width: 725px;
     --container-margin: 2rem auto;
@@ -20,6 +23,7 @@
 }
 
 body {
+    font-family: var(--font-family);
     background-color: var(--bg-color);
     color: var(--fg-color);
 }
@@ -29,16 +33,24 @@ body.dark-theme {
     --fg-color: white;
 }
 
+ul {
+    list-style: none;
+}
+
 a {
     text-decoration: none;
     color: var(--fg-color);
-    transition: all 0.3s ease-in;
 }
 
 button {
     background: transparent;
     border: none;
     cursor: pointer;
+}
+
+a, #search-input, .search-btn,
+.transcription__audio-btn {
+    transition: all 0.3s ease-in;
 }
 
 /****** HEADER ******/
@@ -90,7 +102,6 @@ button {
     background-color: var(--bg-color);
     color: var(--fg-color);
     padding: 0.75rem 0.2rem;
-    transition: all 0.2s ease-in;
 }
 
 #search-input:focus {
@@ -104,7 +115,6 @@ button {
     border-radius: 0.5rem;
     background-color: var(--fg-color);
     color: var(--bg-color);
-    transition: all 0.3s ease-in;
 }
 
 .search-btn:hover {
@@ -145,7 +155,6 @@ button {
     padding: 0 1rem 0 0;
     color: var(--fg-color);
     cursor: pointer;
-    transition: all 0.3s ease-in;
 }
 
 .transcription__audio-btn:hover {
@@ -179,11 +188,90 @@ button {
     height: 1px;
 }
 
+.definition__part-of-speech, 
 .definition__meaning-label {
-    margin-top: 2rem;
+    margin-top: 2.5rem;
+}
+
+.definition__meaning-label {
+    font-size: 1.25rem;
     font-weight: normal;
 }
 
+.definition__meaning-list {
+    padding-left: 1rem;
+    margin-top: 1rem;
+}
+
+.definition__meaning-list > li {
+    position: relative;
+}
+
+.definition__meaning-list > li:before {
+    position: absolute;
+    display: inline-block;
+    content: "\2022";
+    color: var(--accent-color);
+    font-weight: 700;
+    width: 1em;
+    top: 0.15rem;
+    left: -1rem;
+}
+
+.definition__meaning-list li + li {
+    margin-top: 1rem;
+}
+
+.definition__text {
+    font-size: 1.125rem;
+    line-height: 1.3333;
+}
+
+.definition__synonym-label,
+.definition__antonym-label {
+    display: inline-block;
+    font-size: 1.25rem;
+    font-weight: normal;
+    margin-top: 2rem;
+    margin-right: 1rem;
+    color: #757575;
+}
+
+.definition__synonym-list,
+.definition__antonym-list {
+    display: inline-block;
+    padding-left: 0;
+    padding-top: 1rem;
+    line-height: 1.4;
+}
+
+.definition__synonym,
+.definition__antonym {
+    display: inline;
+    font-size: 1.15rem;
+}
+
+.definition__synonym a,
+.definition__antonym a {
+    color: var(--accent-color);
+}
+
+.definition__synonym:last-child::after,
+.definition__antonym:last-child::after {
+    content: "";
+}
+
+.definition__synonym::after,
+.definition__antonym::after {
+    content: ", ";
+}
+
+.definition__example {
+    font-size: 1.125rem;
+    line-height: 1.3333;
+    color: #757575;
+    margin-top: 1rem;
+}
 
 @media screen and (max-width: 768px) {
     .header, .main {
