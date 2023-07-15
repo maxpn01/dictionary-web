@@ -89,6 +89,9 @@ function initiateSearch() {
                 wordContainer.innerHTML = `<h3>No Definitions Found 😕</h3>`;
             });
     } 
+    else {
+        wordContainer.innerHTML = `<h3 id="empty-input">You haven't entered any word! Try again 🙂</h3>`;
+    }
 }
 
 function fillDefinitions(data) {
