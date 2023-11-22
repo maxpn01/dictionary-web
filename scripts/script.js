@@ -39,60 +39,57 @@ const searchBtn = d.querySelector(".search-btn");
 const searchInput = d.getElementById("search-input");
 
 searchBtn.addEventListener("click", initiateSearch);
-
-searchInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        initiateSearch();
-    }
-});
+searchInput.addEventListener("keydown", handleSearchInputKeydown);
 
 function initiateSearch() {
     if (searchInput.value) {
         fetch(`${apiURL}${searchInput.value}`)
             .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-
-                wordContainer.innerHTML = `
-                    <h2 class="word__title">${searchInput.value}</h2>
-
-                    <p class="transcription">
-                        <span class="transcription__dialect">US</span>  
-                        <i class="ri-volume-up-line transcription__audio-btn" id="audio-btn-us"></i>
-                        <span class="transcription__text">${data[0]?.phonetics[0]?.text}</span>
-                        
-                        <span class="transcription__dialect">UK</span> 
-                        <i class="ri-volume-up-line transcription__audio-btn" id="audio-btn-uk"></i>
-                        <span class="transcription__text">${data[0]?.phonetics[1]?.text}</span>
-                    </p>
-                    
-                    <section class="definitions">
-                    </section>
-                `;
-
-                fillDefinitions(data);
-
-                const audioBtnUS = d.getElementById("audio-btn-us");
-                const audioBtnUK = d.getElementById("audio-btn-uk");
-
-                audioUS.setAttribute("src", `${data[0]?.phonetics[0]?.audio}`);
-                audioUK.setAttribute("src", `${data[0]?.phonetics[1]?.audio}`);
-
-                audioBtnUS.addEventListener("click", () => {
-                    audioUS.play();
-                });
-                audioBtnUK.addEventListener("click", () => {
-                    audioUK.play();
-                });
-            })
-            .catch((err) => {
-                console.log(err);
-                wordContainer.innerHTML = `<h3>No Definitions Found 😕</h3>`;
-            });
-    } 
-    else {
-        wordContainer.innerHTML = `<h3 id="empty-input">You haven't entered any word! Try again 🙂</h3>`;
+            .then(handleApiData)
+            .catch(err => handleError(err, "error-msg", "No Definitions Found 😕"));
+    } else {
+        displayMessage(wordContainer, "h3", "empty-input", "You haven't entered any word! Try again 😊");
     }
+}
+
+function handleApiData(data) {
+    console.log(data);
+    const phonetics = data[0]?.phonetics || [];
+
+    wordContainer.innerHTML = `
+        <h2 class="word__title">${data[0]?.word || ""}</h2>
+
+        <p class="transcription">
+            ${renderTranscription("US", phonetics[0])}
+            ${renderTranscription("UK", phonetics[1])}
+        </p>
+
+        <section class="definitions">
+        </section>
+    `;
+
+    searchInput.value = "";
+
+    fillDefinitions(data);
+
+    setAudioSource(audioUS, phonetics[0]?.audio);
+    setAudioSource(audioUK, phonetics[1]?.audio);
+
+    const audioBtnUS = d.getElementById("audio-btn-us");
+    const audioBtnUK = d.getElementById("audio-btn-uk");
+    const transcriptionEl = d.querySelector(".transcription");
+
+    audioBtnUS.addEventListener("click", () => audioUS.play());
+    audioBtnUK.addEventListener("click", () => audioUK.play());
+}
+
+
+function renderTranscription(dialect, phonetic) {
+    return `
+        <span class="transcription__dialect">${dialect}</span>
+        <i class="ri-volume-up-line transcription__audio-btn" id="audio-btn-${dialect.toLowerCase()}"></i>
+        <span class="transcription__text">${phonetic?.text}</span>
+    `;
 }
 
 function fillDefinitions(data) {
@@ -112,63 +109,23 @@ function fillDefinitions(data) {
                 .class("definition__meaning-list")
                 .addTo(definitions);
 
-            for (const def of partOfSpeech.definitions) {
+            const divSynonyms = element("div").addTo(definitions);
+            const divAntonyms = element("div").addTo(definitions);
+
+            partOfSpeech.definitions.forEach((def) => {
                 const li = element("li").addTo(ul);
                 const defText = element("p")
                     .text(def.definition)
                     .class("definition__text")
                     .addTo(li);
-                
+
                 if (def.example) {
-                element("p")
-                    .text(def.example)
-                    .class("definition__example")
-                    .addTo(li);
+                    element("p")
+                        .text(def.example)
+                        .class("definition__example")
+                        .addTo(li);
                 }
-
-                if (def.synonyms.length) {
-                    element("h4")
-                        .text("Synonyms")
-                        .class("definition__synonym-label")
-                        .addTo(li);
-                    const defSynUl = element("ul")
-                        .class("definition__synonym-list")
-                        .addTo(li);
-                    for (const syn of def.synonyms) {
-                        const li = element("li")
-                            .class("definition__synonym")
-                            .addTo(defSynUl);
-                        element("a")
-                            .text(syn)
-                            .attribute(
-                                "href",
-                                "#"
-                            )
-                            .addTo(li);
-                    }
-                }
-
-                if (def.antonyms.length) {
-                    element("h4")
-                        .text("Antonyms")
-                        .class("definition__antonym-label")
-                        .addTo(li);
-                    const defAntUl = element("ul")
-                        .class("definition__antonym-list")
-                        .addTo(li);
-
-                    for (const ant of def.antonyms) {
-                        const li = element("li").class("definition__antonym").addTo(li);
-                        element("a")
-                        .text(ant)
-                        .attribute(
-                            "href",
-                            "#"
-                        )
-                        .addTo(li);
-                    }
-                }
-            }
+            });
 
             if (partOfSpeech.synonyms.length) {
                 const div = element("div").addTo(definitions);
@@ -191,7 +148,11 @@ function fillDefinitions(data) {
                             "href",
                             "#"
                         )
-                        .addTo(li);
+                        .addTo(li)
+                        .addEventListener("click", (event) => {
+                            event.preventDefault();
+                            initiateSearchForRelatedWord(syn);
+                        });
                 }
             }
 
@@ -205,19 +166,50 @@ function fillDefinitions(data) {
                     .class("definition__antonym-list")
                     .addTo(div);
 
-            for (const ant of partOfSpeech.antonyms) {
-                const li = element("li")
-                    .class("definition__antonym")
-                    .addTo(antUl);
-                element("a")
-                    .text(ant)
-                    .attribute(
-                        "href",
-                        "#"
-                    )
-                    .addTo(li);
+                for (const ant of partOfSpeech.antonyms) {
+                    const li = element("li")
+                        .class("definition__antonym")
+                        .addTo(antUl);
+                    element("a")
+                        .text(ant)
+                        .attribute(
+                            "href",
+                            "#"
+                        )
+                        .addTo(li)
+                        .addEventListener("click", (event) => {
+                            event.preventDefault();
+                            initiateSearchForRelatedWord(ant);
+                        });
+                }
             }
         }
     }
-  }
+}
+
+function initiateSearchForRelatedWord(relatedWord) {
+    fetch(`${apiURL}${relatedWord}`)
+        .then((response) => response.json())
+        .then((data) => {handleApiData(data)})
+        .catch(handleError);
+}
+
+function setAudioSource(audioElement, source) {
+    if (audioElement && source)
+        audioElement.setAttribute("src", source);
+}
+
+function handleError(err, id, msg) {
+    console.error(err);
+    displayMessage(wordContainer, "h3", id, msg);
+}
+
+function displayMessage(el, textEl, id, msg) {
+    el.innerHTML = `<${textEl} id="${id}">${msg}</${textEl}>`;
+}
+
+function handleSearchInputKeydown(event) {
+    if (event.key === "Enter") {
+        initiateSearch();
+    }
 }
