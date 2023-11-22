@@ -28,9 +28,7 @@ themeBtn.addEventListener('click', () => {
     localStorage.setItem('selected-icon', getCurrentIcon());
 });
 
-
-/********* WORD SECTION *********/
-
+/********* SEARCH SECTION *********/
 const apiURL = "https://api.dictionaryapi.dev/api/v2/entries/en/";
 const wordContainer = d.querySelector(".main");
 const audioUS = d.getElementById("audio-us");
@@ -108,9 +106,6 @@ function fillDefinitions(data) {
             const ul = element("ul")
                 .class("definition__meaning-list")
                 .addTo(definitions);
-
-            const divSynonyms = element("div").addTo(definitions);
-            const divAntonyms = element("div").addTo(definitions);
 
             partOfSpeech.definitions.forEach((def) => {
                 const li = element("li").addTo(ul);
@@ -209,7 +204,5 @@ function displayMessage(el, textEl, id, msg) {
 }
 
 function handleSearchInputKeydown(event) {
-    if (event.key === "Enter") {
-        initiateSearch();
-    }
+    if (event.key === "Enter") initiateSearch();
 }
